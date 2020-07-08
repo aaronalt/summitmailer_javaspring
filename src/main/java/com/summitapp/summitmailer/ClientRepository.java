@@ -6,9 +6,13 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
 
-// @RepositoryRestResource(collectionResourceRel = "clients", path = "clients")
+@RepositoryRestResource(collectionResourceRel = "clients", path = "clients")
 public interface ClientRepository extends MongoRepository<Client, String> {
 
-    Client findByName(String name);
+    List<Client> getAllClients();
+
+    Client findByName(@Param("name") String name);
+
+    List<Client> findByCountry(@Param("country") String country);
 
 }
