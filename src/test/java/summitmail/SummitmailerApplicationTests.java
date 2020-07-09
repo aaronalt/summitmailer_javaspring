@@ -1,4 +1,4 @@
-package com.summitapp.summitmailer;
+package summitmail;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

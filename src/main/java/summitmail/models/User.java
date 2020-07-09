@@ -1,4 +1,4 @@
-package com.summitapp.summitmailer;
+package summitmail.models;
 
 import org.springframework.data.annotation.Id;
 
