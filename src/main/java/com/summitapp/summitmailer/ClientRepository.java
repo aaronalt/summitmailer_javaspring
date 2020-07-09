@@ -9,10 +9,8 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "clients", path = "clients")
 public interface ClientRepository extends MongoRepository<Client, String> {
 
-    List<Client> getAllClients();
-
     Client findByName(@Param("name") String name);
 
-    List<Client> findByCountry(@Param("country") String country);
+    List<Client> findAllByCountry(@Param("country") String country);
 
 }

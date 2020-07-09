@@ -20,10 +20,19 @@ public class ClientRepositoryTest {
 
     @Before
     public void setUp() {
-        Client client1 = new Client("infoTech", "Testland", "www.info.tech", "test@info.tech");
-        assertNull(client1.getId());
-        this.repository.save(client1);
-        assertNotNull(client1.getId());
+        Client test1 = new Client("infoTech", "Testland", "www.info.tech", "test@info.tech");
+        assertNull(test1.getId());
+        Client test2 = new Client("TestTech", "Testland", "www.info-tech.com", "testtech@gmail.com");
+        Client test3 = new Client("WebTesters", "Testistan", "webtesters.com", "webtest@testers.com");
+        Client test4 = new Client("Coderz", "Testistan", "coderz.co", "info@coderz.co");
+        this.repository.save(test1);
+        this.repository.save(test2);
+        this.repository.save(test3);
+        this.repository.save(test4);
+        assertNotNull(test1.getId());
+        assertNotNull(test2.getName());
+        assertNotNull(test1.getCountry());
+        assertNotNull(test1.getWebsite());
     }
 
     @Test
@@ -39,6 +48,12 @@ public class ClientRepositoryTest {
         assertEquals("test@info.tech", clientUpdate.getEmail());
         clientUpdate.setEmail("hello@info.tech");
         assertEquals("hello@info.tech", clientUpdate.getEmail());
+    }
+
+    @Test
+    public void testFindAllByCountry() {
+        List<Client> allTestland = repository.findAllByCountry("Testland");
+        assertNotNull(allTestland);
     }
 
     @After
