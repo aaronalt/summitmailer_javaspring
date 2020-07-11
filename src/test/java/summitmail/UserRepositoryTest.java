@@ -20,10 +20,12 @@ public class UserRepositoryTest {
 
     @Before
     public void setUp() {
-        User user1 = new User("test@gmail.com", "1q2w3e4r5t6y");
-        assertNull(user1.getId());
+        User user1 = new User();
+        user1.setName("Test Corps");
+        user1.setEmail("test@gmail.com");
+        user1.setHashedpw("1q2w3e4r5t6y");
         this.userRepository.save(user1);
-        assertNotNull(user1.getId());
+        assertNotNull(user1.getName());
     }
 
     @Test
@@ -39,9 +41,9 @@ public class UserRepositoryTest {
         assertEquals("test@gmail.com", user3.getEmail());
         user3.setEmail("info@test.com");
         assertEquals("info@test.com", user3.getEmail());
-        assertEquals("1q2w3e4r5t6y", user3.getPassword());
-        user3.setPassword("password123");
-        assertEquals("password123", user3.getPassword());
+        assertEquals("1q2w3e4r5t6y", user3.getHashedpw());
+        user3.setHashedpw("password123");
+        assertEquals("password123", user3.getHashedpw());
     }
 
     @After
