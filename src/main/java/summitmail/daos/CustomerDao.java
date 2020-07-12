@@ -1,37 +1,61 @@
 package summitmail.daos;
 
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.*;
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import summitmail.models.Customer;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+
 @Component
 public class CustomerDao extends AbstractDao {
 
-    public static String CUSTOMERS_COLLECTION = "customers";
-
-    private MongoCollection<Document> customersCollection;
+    private final MongoCollection<Customer> customersCollection;
 
     @Autowired
     public CustomerDao(
             MongoClient mongoClient, @Value("${spring.mongodb.database}") String databaseName) {
         super(mongoClient, databaseName);
-        customersCollection = db.getCollection(CUSTOMERS_COLLECTION);
+        CodecRegistry pojoCodecRegistry =
+                fromRegistries(
+                        MongoClientSettings.getDefaultCodecRegistry(),
+                        fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+        customersCollection = db.getCollection("customers", Customer.class).withCodecRegistry(pojoCodecRegistry);
     }
 
     @SuppressWarnings("unchecked")
     private Bson buildLookupStage() {
         return null;
+    }
 
+    /**
+     * Inserts Customer object into the 'customers' collection.
+     *
+     * @param customer - Customer object to be added
+     * @return True if successful, throw IncorrectDaoOperation otherwise
+     */
+    public boolean addCustomer(Customer customer) {
+        try {
+            customersCollection.insertOne(customer);
+            return true;
+        } catch (IncorrectDaoOperation ido) {
+            System.out.println("incorrect DaoOperation, check addCustomer in CustomerDAO");
+            return false;
+        }
     }
 
     /**
@@ -62,15 +86,12 @@ public class CustomerDao extends AbstractDao {
      * @return Document object or null.
      */
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public Document getCustomer(String customerId) {
+    public Customer getCustomer(String customerId) {
         if (!validIdValue(customerId)) {
             return null;
         }
-        List<Bson> pipeline = new ArrayList<>();
-        // match stage to find customer
-        Bson match = Aggregates.match(Filters.eq("_id", new ObjectId(customerId)));
-        pipeline.add(match);
-        Document customer = customersCollection.aggregate(pipeline).first();
+        Bson queryFilter = new Document("_id", customerId);
+        Customer customer = customersCollection.find(queryFilter).iterator().tryNext();
         return customer;
     }
 
@@ -83,9 +104,9 @@ public class CustomerDao extends AbstractDao {
      * @return list of documents.
      */
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public List<Document> getCustomers(int limit, int skip) {
+    public List<Customer> getCustomers(int limit, int skip) {
         String defaultSortKey = "tomatoes.viewer.numReviews";
-        List<Document> customers =
+        List<Customer> customers =
                 new ArrayList<>(getCustomers(limit, skip, Sorts.descending(defaultSortKey)));
         return customers;
     }
@@ -98,9 +119,9 @@ public class CustomerDao extends AbstractDao {
      * @param sort  - result sorting criteria.
      * @return list of documents that sorted by the defined sort criteria.
      */
-    public List<Document> getCustomers(int limit, int skip, Bson sort) {
+    public List<Customer> getCustomers(int limit, int skip, Bson sort) {
 
-        List<Document> customers = new ArrayList<>();
+        List<Customer> customers = new ArrayList<>();
 
         customersCollection
                 .find()
@@ -119,11 +140,11 @@ public class CustomerDao extends AbstractDao {
      * @param country - Country string value to be matched.
      * @return List of matching Document objects.
      */
-    public List<Document> getcustomersByCountry(String... country) {
+    public List<Document> getCustomersByCountry(String... country) {
 
         Bson queryFilter = new Document();
         Bson projection = new Document();
-        //TODO> Ticket: Projection - implement the query and projection required by the unit test
+        //Ticket: Projection - implement the query and projection required by the unit test
         List<Document> customers = new ArrayList<>();
 
         return customers;
@@ -137,7 +158,7 @@ public class CustomerDao extends AbstractDao {
      * @param skip     - number of documents to be skipped.
      * @param keywords - text matching keywords or terms
      * @return List of query matching Document objects
-     */
+     *
     public List<Document> getcustomersByText(int limit, int skip, String keywords) {
         Bson textFilter = Filters.text(keywords);
         Bson projection = Projections.metaTextScore("score");
@@ -153,54 +174,7 @@ public class CustomerDao extends AbstractDao {
                 .forEachRemaining(customers::add);
         return customers;
     }
-
-    /**
-     * Finds all customers that contain any of the `casts` members, sorted in descending by the `sortKey`
-     * field.
-     *
-     * @param sortKey - sort key.
-     * @param limit   - number of documents to be returned.
-     * @param skip    - number of documents to be skipped.
-     * @param cast    - cast selector.
-     * @return List of documents sorted by sortKey that match the cast selector.
-     */
-    public List<Document> getcustomersByCast(String sortKey, int limit, int skip, String... cast) {
-        Bson castFilter = null;
-        Bson sort = null;
-        //TODO> Ticket: Subfield Text Search - implement the expected cast
-        // filter and sort
-        List<Document> customers = new ArrayList<>();
-        customersCollection
-                .find(castFilter)
-                .sort(sort)
-                .limit(limit)
-                .skip(skip)
-                .iterator()
-                .forEachRemaining(customers::add);
-        return customers;
-    }
-
-    /**
-     * Finds all customers that match the provide `genres`, sorted descending by the `sortKey` field.
-     *
-     * @param sortKey - sorting key string.
-     * @param limit   - number of documents to be returned.
-     * @param skip    - number of documents to be skipped
-     * @param genres  - genres matching string vargs.
-     * @return List of matching Document objects.
-     */
-    public List<Document> getcustomersByGenre(String sortKey, int limit, int skip, String... genres) {
-        // query filter
-        Bson castFilter = Filters.in("genres", genres);
-        // sort key
-        Bson sort = Sorts.descending(sortKey);
-        List<Document> customers = new ArrayList<>();
-        // TODO > Ticket: Paging - implement the necessary cursor methods to support simple
-        // pagination like skip and limit in the code below
-        customersCollection.find(castFilter).sort(sort).iterator()
-        .forEachRemaining(customers::add);
-        return customers;
-    }
+    */
 
     private ArrayList<Integer> runtimeBoundaries() {
         ArrayList<Integer> runtimeBoundaries = new ArrayList<>();
@@ -257,12 +231,13 @@ public class CustomerDao extends AbstractDao {
         return Aggregates.bucket("$metacritic", ratingBoundaries(), bucketOptions);
     }
 
+
     /**
      * This method is the java implementation of the following mongo shell aggregation pipeline
      * pipeline.aggregate([ {$match: {cast: {$in: ... }}}, {$sort: {tomatoes.viewer.numReviews: -1}},
      * {$skip: ... }, {$limit: ... }, {$facet:{ runtime: {$bucket: ...}, rating: {$bucket: ...},
      * customers: {$addFields: ...}, }} ])
-     */
+     *
     public List<Document> getcustomersCastFaceted(int limit, int skip, String... cast) {
         List<Document> customers = new ArrayList<>();
         String sortKey = "tomatoes.viewer.numReviews";
@@ -290,7 +265,7 @@ public class CustomerDao extends AbstractDao {
      * {$addFields: ...}, }} ])
      *
      * @return Bson defining the $facet stage.
-     */
+     *
     private Bson buildFacetStage() {
 
         return Aggregates.facet(
@@ -299,12 +274,14 @@ public class CustomerDao extends AbstractDao {
                 new Facet("customers", Aggregates.addFields(new Field("title", "$title"))));
     }
 
+    */
+
     /**
      * Counts the total amount of documents in the `customers` collection
      *
      * @return number of documents in the customers collection.
      */
-    public long getcustomersCount() {
+    public long getCustomersCount() {
         return this.customersCollection.countDocuments();
     }
 
@@ -328,13 +305,4 @@ public class CustomerDao extends AbstractDao {
         return this.customersCollection.countDocuments(Filters.in("cast", cast));
     }
 
-    /**
-     * Counts the number of documents match genres filter.
-     *
-     * @param genres - genres string vargs.
-     * @return number of matching documents.
-     */
-    public long getGenresSearchCount(String... genres) {
-        return this.customersCollection.countDocuments(Filters.in("genres", genres));
-    }
 }

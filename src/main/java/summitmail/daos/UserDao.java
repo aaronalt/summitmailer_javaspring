@@ -126,7 +126,7 @@ public class UserDao extends AbstractDao {
      */
     public boolean deleteUser(String email) {
         //Ticket: User Management - implement the delete user method
-        //TODO > Ticket: Handling Errors - make this method more robust by
+        //Ticket: Handling Errors - make this method more robust by
         // handling potential exceptions.
         Bson userQuery = new Document("email", email);
         usersCollection.deleteOne(userQuery);
