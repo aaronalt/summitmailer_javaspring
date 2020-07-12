@@ -133,23 +133,4 @@ public class UserDao extends AbstractDao {
         deleteUserSessions(email);
         return true;
     }
-
-    /**
-     * Updates the preferences of an user identified by `email` parameter.
-     *
-     * @param email           - user to be updated email
-     * @param userPreferences - set of preferences that should be stored and replace the existing
-     *                        ones. Cannot be set to null value
-     * @return User object that just been updated.
-     */
-    public boolean updateUserPreferences(String email, Map<String, ?> userPreferences) {
-        //TODO> Ticket: User Preferences - implement the method that allows for user preferences to
-        // be updated.
-        //TODO > Ticket: Handling Errors - make this method more robust by
-        // handling potential exceptions when updating an entry.
-        return false;
-    }
-
-
-
 }

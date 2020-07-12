@@ -1,26 +1,26 @@
 package summitmail.models;
 
-import org.springframework.data.annotation.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Client {
+public class Customer {
 
-    @Id private String id;
+    @JsonProperty("_id")
+    private String id;
 
     private String name;
     private String country;
     private String website;
     private String email;
 
-    public Client(String name, String country, String website, String email) {
-        this.name = name;
-        this.country = country;
-        this.website = website;
-        this.email = email;
+    public Customer() {
+        super();
     }
 
     public String getId() {
         return id;
     }
+
+    public void setId(String id) { this.id = id; }
 
     public String getName() {
         return name;

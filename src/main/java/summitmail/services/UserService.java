@@ -147,31 +147,6 @@ public class UserService implements UserDetailsService {
         return userDao.deleteUser(email);
     }
 
-    /**
-     * Updates the user preferences settings.
-     *
-     * @param email           - string that identifies the user
-     * @param userPreferences - map of key value pairs that define the user preferences.
-     * @return true in case of success.
-     */
-    public boolean updateUserPreferences(
-            String email, Map<String, ?> userPreferences, Map<String, Object> results)
-            throws UsernameNotFoundException {
-
-        Map<String, String> preferences =
-                (Map<String, String>) userPreferences.get("preferences");
-        if (userDao.updateUserPreferences(email, preferences)) {
-            User user = userDao.getUser(email);
-            if (user == null) {
-
-                throw new UsernameNotFoundException("Cannot find username.");
-            }
-            results.put("info", user);
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = loadUser(username);
