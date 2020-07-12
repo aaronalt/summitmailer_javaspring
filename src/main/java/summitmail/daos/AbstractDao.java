@@ -19,7 +19,7 @@ public abstract class AbstractDao {
 
     protected final String SummitMailDatabase;
     protected MongoDatabase db;
-    protected MongoClient mongoClient;
+    public MongoClient mongoClient;
     @Value("${spring.mongodb.uri}")
     private String connectionString;
 
