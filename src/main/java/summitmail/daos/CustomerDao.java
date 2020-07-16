@@ -1,10 +1,12 @@
 package summitmail.daos;
 
 import com.mongodb.MongoClientSettings;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.*;
 import org.bson.Document;
+import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
@@ -13,13 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import summitmail.models.Customer;
+import summitmail.utils.CustomerCodec;
 
+import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+import static org.bson.codecs.configuration.CodecRegistries.*;
 
 @Component
 public class CustomerDao extends AbstractDao {
@@ -30,11 +34,13 @@ public class CustomerDao extends AbstractDao {
     public CustomerDao(
             MongoClient mongoClient, @Value("${spring.mongodb.database}") String databaseName) {
         super(mongoClient, databaseName);
-        CodecRegistry pojoCodecRegistry =
-                fromRegistries(
-                        MongoClientSettings.getDefaultCodecRegistry(),
-                        fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-        customersCollection = db.getCollection("customers", Customer.class).withCodecRegistry(pojoCodecRegistry);
+        CustomerCodec customerCodec = new CustomerCodec();
+        CodecRegistry codecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), fromCodecs(customerCodec));
+        // CodecRegistry pojoCodecRegistry =
+        //        fromRegistries(
+        //                MongoClientSettings.getDefaultCodecRegistry(),
+        //                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+        customersCollection = db.getCollection("customers", Customer.class).withCodecRegistry(codecRegistry);
     }
 
     @SuppressWarnings("unchecked")
@@ -90,6 +96,10 @@ public class CustomerDao extends AbstractDao {
         if (!validIdValue(customerId)) {
             return null;
         }
+        // List<Bson> pipeline = new ArrayList<>();
+        // Bson match = Aggregates.match(Filters.eq("_id", new ObjectId(customerId)));
+        // pipeline.add(match);
+        // Customer customer = customersCollection.aggregate(pipeline).first();
         Bson queryFilter = new Document("_id", customerId);
         Customer customer = customersCollection.find(queryFilter).iterator().tryNext();
         return customer;
@@ -140,13 +150,14 @@ public class CustomerDao extends AbstractDao {
      * @param country - Country string value to be matched.
      * @return List of matching Document objects.
      */
-    public List<Document> getCustomersByCountry(String... country) {
+    public ArrayList<Customer> getCustomersByCountry(String... country) {
 
-        Bson queryFilter = new Document();
-        Bson projection = new Document();
-        //Ticket: Projection - implement the query and projection required by the unit test
-        List<Document> customers = new ArrayList<>();
-
+        Bson queryFilter = new Document("country", country);
+        ArrayList<Customer> customers = new ArrayList<>();
+        Iterable<Customer> customersFound = customersCollection.find(queryFilter);
+        for (Customer customer : customersFound) {
+            customers.add(customer);
+        }
         return customers;
     }
 

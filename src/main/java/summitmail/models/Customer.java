@@ -1,12 +1,11 @@
 package summitmail.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.bson.types.ObjectId;
 
 public class Customer {
 
-    @JsonProperty("_id")
     private String id;
-
     private String name;
     private String country;
     private String website;
@@ -16,9 +15,7 @@ public class Customer {
         super();
     }
 
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
 
     public void setId(String id) { this.id = id; }
 
@@ -53,5 +50,21 @@ public class Customer {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    /**
+     * Checks for if Customer object is empty.
+     *
+     * @return if no name set, customer is empty.
+     */
+    @JsonIgnore
+    public boolean isEmpty() {
+        return this.name == null || "".equals(this.getName());
+    }
+
+    public Customer withNewId() {
+        setId(new ObjectId().toHexString());
+        return this;
+    }
+
 
 }

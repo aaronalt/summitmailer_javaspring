@@ -76,11 +76,8 @@ public class CustomerService {
         Map<String, Object> results = new HashMap<>();
         results.put(
                 "customer_list",
-                customerDao
-                        .getCustomersByCountry(countries)
-                        .stream()
-                        .map(CustomerDocumentMapper::mapToCustomer)
-                        .collect(Collectors.toList()));
+                new ArrayList<>(customerDao
+                        .getCustomersByCountry(countries)));
 
         return results;
     }
