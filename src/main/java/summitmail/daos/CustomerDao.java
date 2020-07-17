@@ -22,6 +22,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import static com.mongodb.client.model.Filters.*;
 
 import static org.bson.codecs.configuration.CodecRegistries.*;
 
@@ -36,15 +37,7 @@ public class CustomerDao extends AbstractDao {
         super(mongoClient, databaseName);
         CustomerCodec customerCodec = new CustomerCodec();
         CodecRegistry codecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), fromCodecs(customerCodec));
-        // CodecRegistry pojoCodecRegistry =
-        //        fromRegistries(
-        //                MongoClientSettings.getDefaultCodecRegistry(),
-        //                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
         customersCollection = db.getCollection("customers", Customer.class).withCodecRegistry(codecRegistry);
-    }
-
-    public long sizeOfCollection() {
-        return customersCollection.countDocuments();
     }
 
     @SuppressWarnings("unchecked")
@@ -111,9 +104,9 @@ public class CustomerDao extends AbstractDao {
      */
     @SuppressWarnings("UnnecessaryLocalVariable")
     public List<Customer> getCustomers(int limit, int skip) {
-        String defaultSortKey = "tomatoes.viewer.numReviews";
+        // String defaultSortKey = "tomatoes.viewer.numReviews";
         List<Customer> customers =
-                new ArrayList<>(getCustomers(limit, skip, Sorts.descending(defaultSortKey)));
+                new ArrayList<>(getCustomers(limit, skip, Sorts.descending()));
         return customers;
     }
 
@@ -148,12 +141,9 @@ public class CustomerDao extends AbstractDao {
      */
     public ArrayList<Customer> getCustomersByCountry(String... country) {
 
-        Bson queryFilter = new Document("country", country);
         ArrayList<Customer> customers = new ArrayList<>();
-        Iterable<Customer> customersFound = customersCollection.find(queryFilter);
-        for (Customer customer : customersFound) {
-            customers.add(customer);
-        }
+        Iterable<Customer> customersFound = customersCollection.find(gt("country", country));
+        customersFound.forEach(customers::add);
         return customers;
     }
 
@@ -291,25 +281,4 @@ public class CustomerDao extends AbstractDao {
     public long getCustomersCount() {
         return this.customersCollection.countDocuments();
     }
-
-    /**
-     * Counts the number of documents matched by this text query
-     *
-     * @param keywords - set of keywords that match the query
-     * @return number of matching documents.
-     */
-    public long getTextSearchCount(String keywords) {
-        return this.customersCollection.countDocuments(Filters.text(keywords));
-    }
-
-    /**
-     * Counts the number of documents matched by this cast elements
-     *
-     * @param cast - cast string vargs.
-     * @return number of matching documents.
-     */
-    public long getCastSearchCount(String... cast) {
-        return this.customersCollection.countDocuments(Filters.in("cast", cast));
-    }
-
 }

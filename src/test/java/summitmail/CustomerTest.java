@@ -37,10 +37,10 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 public class CustomerTest extends AbstractTest {
 
   private CustomerDao dao;
-  private CustomerService customerService;
   private Customer testCustomer;
-  private ObjectId customer1Id;
-  private ObjectId customer2Id;
+  private Customer testCustomer2;
+  private Customer testCustomer3;
+  private Customer testCustomer4;
   private static String email = "info@test1.com";
 
   @Autowired MongoClient mongoClient;
@@ -50,21 +50,24 @@ public class CustomerTest extends AbstractTest {
 
   @Before
   public void setUp() throws Exception {
-    //CustomerCodec customerCodec = new CustomerCodec();
-    //CodecRegistry codecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), fromCodecs(customerCodec));
-    //MongoCollection<Customer> testCollection = testDb.getCollection("customers", Customer.class).withCodecRegistry(codecRegistry);
 
     this.dao = new CustomerDao(mongoClient, databaseName);
 
-    this.customerService = new CustomerService();
     this.testCustomer = new Customer().withNewId();
     this.testCustomer.setName("Test 1");
     this.testCustomer.setCountry("Testland");
     this.testCustomer.setWebsite("test1.com");
     this.testCustomer.setEmail("info@test1.com");
-    //mongoClient
-    //        .getDatabase(databaseName)
-    //        .getCollection("customers");
+    this.testCustomer2 = new Customer().withNewId();
+    this.testCustomer2.setName("Test 2");
+    this.testCustomer2.setCountry("Testland");
+    this.testCustomer2.setWebsite("test2.com");
+    this.testCustomer2.setEmail("test2@test2.com");
+    this.testCustomer3 = new Customer().withNewId();
+    this.testCustomer3.setName("Test 3");
+    this.testCustomer3.setCountry("Testlandia");
+    this.testCustomer3.setWebsite("test3.io");
+    this.testCustomer3.setEmail("test3@test3.io");
   }
 
   @Test
@@ -73,34 +76,46 @@ public class CustomerTest extends AbstractTest {
             "Should have correctly added customer into db",
             dao.addCustomer(testCustomer)
     );
-    Assert.assertEquals(1, dao.sizeOfCollection());
+    Assert.assertEquals(1, dao.getCustomersCount());
   }
 
   @Test
   public void testGetCustomer() {
     Assert.assertNotEquals(dao.getCustomer(testCustomer.getId()), testCustomer);
     dao.addCustomer(testCustomer);
-    Assert.assertEquals(1, dao.sizeOfCollection());
+    Assert.assertEquals(1, dao.getCustomersCount());
     Assert.assertNotNull(testCustomer.getId());
     Customer customer = dao.getCustomer(testCustomer.getEmail());
     Assert.assertEquals(customer.getName(), testCustomer.getName());
+    Assert.assertEquals(customer.getEmail(), testCustomer.getEmail());
+    Assert.assertEquals(customer.getCountry(), testCustomer.getCountry());
+    Assert.assertEquals(customer.getWebsite(), testCustomer.getWebsite());
+  }
+
+  @Test
+  public void testGetAllCustomers() {
+    dao.addCustomer(testCustomer);
+    dao.addCustomer(testCustomer2);
+    dao.addCustomer(testCustomer3);
+    int expectedSize = 3;
+    List<Customer> customers = dao.getCustomers(expectedSize, 0);
+    Assert.assertNotNull(customers);
+    Assert.assertEquals(expectedSize, customers.size());
   }
 
   @Test
   public void testFindCustomerByCountry() {
+    dao.addCustomer(testCustomer);
+    dao.addCustomer(testCustomer2);
     int expectedSize = 2;
     String country = "Testland";
-    Iterable<Customer> cursor = dao.getCustomersByCountry(country);
+    ArrayList<Customer> cursor = dao.getCustomersByCountry(country);
     int actualSize = 0;
     for (Customer d : cursor) {
       System.out.println(d);
       actualSize++;
     }
-
-    Assert.assertEquals(
-        "Unexpected number of returned movie documents. Check your query filter",
-        expectedSize,
-        actualSize);
+    Assert.assertEquals(expectedSize, actualSize);
   }
 
   @After
