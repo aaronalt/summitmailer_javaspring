@@ -77,6 +77,7 @@ public class CustomerTest extends AbstractTest {
             dao.addCustomer(testCustomer)
     );
     Assert.assertEquals(1, dao.getCustomersCount());
+    Assert.assertFalse(dao.addCustomer(testCustomer));
   }
 
   @Test

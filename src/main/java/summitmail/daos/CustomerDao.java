@@ -52,6 +52,9 @@ public class CustomerDao extends AbstractDao {
      * @return True if successful, throw IncorrectDaoOperation otherwise
      */
     public boolean addCustomer(Customer customer) {
+        if (customersCollection.find(eq("email", customer.getEmail())).iterator().tryNext().equals(customer)) {
+            return false;
+        }
         if (!customer.isEmpty()) {
             customersCollection.insertOne(customer);
             return true;
