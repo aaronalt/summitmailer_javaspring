@@ -43,6 +43,10 @@ public class CustomerDao extends AbstractDao {
         customersCollection = db.getCollection("customers", Customer.class).withCodecRegistry(codecRegistry);
     }
 
+    public long sizeOfCollection() {
+        return customersCollection.countDocuments();
+    }
+
     @SuppressWarnings("unchecked")
     private Bson buildLookupStage() {
         return null;
@@ -55,13 +59,11 @@ public class CustomerDao extends AbstractDao {
      * @return True if successful, throw IncorrectDaoOperation otherwise
      */
     public boolean addCustomer(Customer customer) {
-        try {
+        if (!customer.isEmpty()) {
             customersCollection.insertOne(customer);
             return true;
-        } catch (IncorrectDaoOperation ido) {
-            System.out.println("incorrect DaoOperation, check addCustomer in CustomerDAO");
-            return false;
         }
+        else return false;
     }
 
     /**
@@ -88,21 +90,15 @@ public class CustomerDao extends AbstractDao {
     /**
      * Gets a customer object from the database.
      *
-     * @param customerId - customer identifier string.
+     * @param email - customer identifier string.
      * @return Document object or null.
      */
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public Customer getCustomer(String customerId) {
-        if (!validIdValue(customerId)) {
-            return null;
-        }
-        // List<Bson> pipeline = new ArrayList<>();
-        // Bson match = Aggregates.match(Filters.eq("_id", new ObjectId(customerId)));
-        // pipeline.add(match);
-        // Customer customer = customersCollection.aggregate(pipeline).first();
-        Bson queryFilter = new Document("_id", customerId);
-        Customer customer = customersCollection.find(queryFilter).iterator().tryNext();
-        return customer;
+    public Customer getCustomer(String email) {
+        // if (!validIdValue(customerId)) { return null; }
+        Bson queryFilter = new Document("email", email);
+        Customer found = customersCollection.find(queryFilter).iterator().tryNext();
+        return found;
     }
 
     /**

@@ -2,8 +2,10 @@ package summitmail.services;
 
 import summitmail.daos.CustomerDao;
 import summitmail.daos.CustomerDocumentMapper;
+import summitmail.daos.IncorrectDaoOperation;
 import summitmail.daos.UserDao;
 import summitmail.models.Customer;
+import summitmail.models.CustomerRegistry;
 import summitmail.models.User;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -21,6 +23,7 @@ public class CustomerService {
 
     @Autowired
     private CustomerDao customerDao;
+
     @Autowired
     private UserDao userDao;
 
@@ -31,17 +34,32 @@ public class CustomerService {
     /**
      * Finds the Customer object that matches the `id` value.
      *
-     * @param id - matching movie id.
      * @return Customer object or null if no match applies.
      */
-    public Customer getCustomer(String id) {
+    public Customer createCustomer(CustomerRegistry register, Map<String, String> errors) {
+        Customer customer = getCustomerFromRegistry(register);
+        return createCustomer(customer, errors);
+    }
 
-        Customer customer = customerDao.getCustomer(id);
-        if (customer.getId() == null || customer.getId().isEmpty()) {
-            return null;
-        }
+    private Customer getCustomerFromRegistry(CustomerRegistry register) {
+        Customer customer = new Customer();
+        customer.setName(register.getName());
+        customer.setCountry(register.getCountry());
+        customer.setWebsite(register.getWebsite());
+        customer.setEmail(register.getEmail());
         return customer;
     }
+
+    private Customer createCustomer(Customer customer, Map<String, String> errors) {
+        try {
+            return customerDao.addCustomer(customer) ? customer : null;
+        } catch (IncorrectDaoOperation ex) {
+            errors.put("msg", ex.getMessage());
+        }
+        return null;
+    }
+
+    // public Customer loadCustomer(String email) { return customerDao.getCustomer(email); }
 
     /**
      * Lists all customers per page.

@@ -42,8 +42,6 @@ public class UserDao extends AbstractDao {
 
         usersCollection = db.getCollection("users", User.class).withCodecRegistry(pojoCodecRegistry);
         log = LoggerFactory.getLogger(this.getClass());
-        // Ticket: User Management - implement the necessary changes so that the sessions
-        // collection returns a Session objects instead of Document objects.
         sessionsCollection = db.getCollection("sessions", Session.class).withCodecRegistry(pojoCodecRegistry);
     }
 
@@ -54,7 +52,6 @@ public class UserDao extends AbstractDao {
      * @return True if successful, throw IncorrectDaoOperation otherwise
      */
     public boolean addUser(User user) {
-        //Ticket: Durable Writes -  you might want to use a more durable write concern here!
         if (!user.isEmpty()) {
             usersCollection.insertOne(user);
             return true;

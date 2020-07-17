@@ -42,6 +42,7 @@ public class CustomerTest extends AbstractTest {
   private ObjectId customer1Id;
   private ObjectId customer2Id;
   private static String email = "info@test1.com";
+
   @Autowired MongoClient mongoClient;
 
   @Value("${spring.mongodb.database}")
@@ -52,22 +53,18 @@ public class CustomerTest extends AbstractTest {
     //CustomerCodec customerCodec = new CustomerCodec();
     //CodecRegistry codecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), fromCodecs(customerCodec));
     //MongoCollection<Customer> testCollection = testDb.getCollection("customers", Customer.class).withCodecRegistry(codecRegistry);
+
     this.dao = new CustomerDao(mongoClient, databaseName);
+
     this.customerService = new CustomerService();
     this.testCustomer = new Customer().withNewId();
     this.testCustomer.setName("Test 1");
     this.testCustomer.setCountry("Testland");
     this.testCustomer.setWebsite("test1.com");
     this.testCustomer.setEmail("info@test1.com");
-    mongoClient
-            .getDatabase(databaseName)
-            .getCollection("customers");
-  }
-
-  @After
-  public void tearDown() {
-    MongoDatabase db = mongoClient.getDatabase(databaseName);
-    db.getCollection("customers").deleteMany(new Document("email", email));
+    //mongoClient
+    //        .getDatabase(databaseName)
+    //        .getCollection("customers");
   }
 
   @Test
@@ -76,14 +73,17 @@ public class CustomerTest extends AbstractTest {
             "Should have correctly added customer into db",
             dao.addCustomer(testCustomer)
     );
+    Assert.assertEquals(1, dao.sizeOfCollection());
   }
 
   @Test
   public void testGetCustomer() {
     Assert.assertNotEquals(dao.getCustomer(testCustomer.getId()), testCustomer);
     dao.addCustomer(testCustomer);
-    Customer customer = customerService.getCustomer(testCustomer.getId());
-    Assert.assertFalse(customer.isEmpty());
+    Assert.assertEquals(1, dao.sizeOfCollection());
+    Assert.assertNotNull(testCustomer.getId());
+    Customer customer = dao.getCustomer(testCustomer.getEmail());
+    Assert.assertEquals(customer.getName(), testCustomer.getName());
   }
 
   @Test
@@ -101,5 +101,11 @@ public class CustomerTest extends AbstractTest {
         "Unexpected number of returned movie documents. Check your query filter",
         expectedSize,
         actualSize);
+  }
+
+  @After
+  public void tearDown() {
+    MongoDatabase db = mongoClient.getDatabase(databaseName);
+    db.getCollection("customers").deleteMany(new Document("email", email));
   }
 }
