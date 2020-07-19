@@ -4,6 +4,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.*;
 import org.bson.Document;
 import org.bson.codecs.Codec;
@@ -52,14 +53,15 @@ public class CustomerDao extends AbstractDao {
      * @return True if successful, throw IncorrectDaoOperation otherwise
      */
     public boolean addCustomer(Customer customer) {
-        if (customersCollection.find(eq("email", customer.getEmail())).iterator().tryNext().equals(customer)) {
+        try {
+            if (!customer.isEmpty()) {
+                customersCollection.insertOne(customer);
+                return true;
+            }
+            else return false;
+        } catch (Exception e) {
             return false;
         }
-        if (!customer.isEmpty()) {
-            customersCollection.insertOne(customer);
-            return true;
-        }
-        else return false;
     }
 
     /**
@@ -107,7 +109,6 @@ public class CustomerDao extends AbstractDao {
      */
     @SuppressWarnings("UnnecessaryLocalVariable")
     public List<Customer> getCustomers(int limit, int skip) {
-        // String defaultSortKey = "tomatoes.viewer.numReviews";
         List<Customer> customers =
                 new ArrayList<>(getCustomers(limit, skip, Sorts.descending()));
         return customers;
@@ -142,11 +143,11 @@ public class CustomerDao extends AbstractDao {
      * @param country - Country string value to be matched.
      * @return List of matching Document objects.
      */
-    public ArrayList<Customer> getCustomersByCountry(String... country) {
+    public List<Customer> getCustomersByCountry(String... country) {
 
-        ArrayList<Customer> customers = new ArrayList<>();
-        Iterable<Customer> customersFound = customersCollection.find(gt("country", country));
-        customersFound.forEach(customers::add);
+        List<Customer> customers = new ArrayList<>();
+        Bson qFilter = all("country", country);
+        customersCollection.find(qFilter).into(customers);
         return customers;
     }
 

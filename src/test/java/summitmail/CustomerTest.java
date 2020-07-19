@@ -68,6 +68,10 @@ public class CustomerTest extends AbstractTest {
     this.testCustomer3.setCountry("Testlandia");
     this.testCustomer3.setWebsite("test3.io");
     this.testCustomer3.setEmail("test3@test3.io");
+    mongoClient
+            .getDatabase(databaseName)
+            .getCollection("customers")
+            .deleteMany(new Document());
   }
 
   @Test
@@ -110,7 +114,7 @@ public class CustomerTest extends AbstractTest {
     dao.addCustomer(testCustomer2);
     int expectedSize = 2;
     String country = "Testland";
-    ArrayList<Customer> cursor = dao.getCustomersByCountry(country);
+    List<Customer> cursor = dao.getCustomersByCountry(country);
     int actualSize = 0;
     for (Customer d : cursor) {
       System.out.println(d);
