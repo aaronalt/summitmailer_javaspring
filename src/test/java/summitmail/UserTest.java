@@ -118,4 +118,9 @@ public class UserTest extends TicketTest {
                 "User data should not be found after user been deleted. Make sure you delete data from users collection",
                 dao.getUser(testUser.getEmail()));
     }
+
+    @Test
+    public void testUserControllerGetUser() {
+
+    }
 }

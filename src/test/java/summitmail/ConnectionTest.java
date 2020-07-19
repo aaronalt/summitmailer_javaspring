@@ -60,7 +60,7 @@ public class ConnectionTest extends TicketTest {
 
     MongoClient mc = MongoClients.create(mongoUri);
     // needs to find at least these collections
-    List<String> collectionNames = Arrays.asList("sessions", "users");
+    List<String> collectionNames = Arrays.asList("sessions", "users", "customers");
 
     int found = 0;
     for (String colName : mc.getDatabase(databaseName).listCollectionNames()) {

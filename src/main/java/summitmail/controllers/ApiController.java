@@ -25,7 +25,7 @@ public abstract class ApiController {
     public ResponseEntity<Map> info() {
 
         Map<String, String> responseMap = new HashMap<>();
-        responseMap.put("message", "hello from MFlix API");
+        responseMap.put("message", "hello from SummitMailer API");
 
         return ResponseEntity.ok(responseMap);
     }

@@ -86,11 +86,11 @@ public class CustomerTest extends AbstractTest {
 
   @Test
   public void testGetCustomer() {
-    Assert.assertNotEquals(dao.getCustomer(testCustomer.getId()), testCustomer);
+    Assert.assertNotEquals(dao.getCustomerByEmail(testCustomer.getId()), testCustomer);
     dao.addCustomer(testCustomer);
     Assert.assertEquals(1, dao.getCustomersCount());
     Assert.assertNotNull(testCustomer.getId());
-    Customer customer = dao.getCustomer(testCustomer.getEmail());
+    Customer customer = dao.getCustomerByEmail(testCustomer.getEmail());
     Assert.assertEquals(customer.getName(), testCustomer.getName());
     Assert.assertEquals(customer.getEmail(), testCustomer.getEmail());
     Assert.assertEquals(customer.getCountry(), testCustomer.getCountry());

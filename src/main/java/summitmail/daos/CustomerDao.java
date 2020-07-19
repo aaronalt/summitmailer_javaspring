@@ -65,43 +65,33 @@ public class CustomerDao extends AbstractDao {
     }
 
     /**
-     * customerId needs to be a hexadecimal string value. Otherwise it won't be possible to translate to
-     * an ObjectID
+     * Gets a customer object from the database via customer ID.
      *
-     * @param customerId - customer object identifier
-     * @return true if valid customerId.
-     */
-    private boolean validIdValue(String customerId) {
-        //Ticket: Handling Errors - implement a way to catch a
-        //any potential exceptions thrown while validating a customer id.
-        //Check out this method's use in the method that follows.
-        boolean isHex;
-        try {
-            int x = Integer.parseInt(customerId, 16);
-            isHex = true;
-        } catch (NumberFormatException nfe) {
-            isHex = false;
-        }
-        return isHex;
-    }
-
-    /**
-     * Gets a customer object from the database.
-     *
-     * @param email - customer identifier string.
+     * @param id - customer identifier string.
      * @return Document object or null.
      */
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public Customer getCustomer(String email) {
-        // if (!validIdValue(customerId)) { return null; }
+    public Customer getCustomerById(String id) {
+        Bson queryFilter = new Document("id", id);
+        Customer found = customersCollection.find(queryFilter).iterator().tryNext();
+        return found;
+    }
+
+    /**
+     * Gets a customer object from the database via customer's email.
+     *
+     * @param email - customer email.
+     * @return Document object or null.
+     */
+    @SuppressWarnings("UnnecessaryLocalVariable")
+    public Customer getCustomerByEmail(String email) {
         Bson queryFilter = new Document("email", email);
         Customer found = customersCollection.find(queryFilter).iterator().tryNext();
         return found;
     }
 
     /**
-     * Returns all customers within the defined limit and skip values using a default descending sort key
-     * `tomatoes.viewer.numReviews`
+     * Returns all customers within the defined limit and skip values.
      *
      * @param limit - max number of returned documents.
      * @param skip  - number of documents to be skipped.

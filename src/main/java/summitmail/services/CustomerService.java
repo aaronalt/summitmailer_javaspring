@@ -32,7 +32,7 @@ public class CustomerService {
     }
 
     /**
-     * Finds the Customer object that matches the `id` value.
+     * Creates a new Customer object.
      *
      * @return Customer object or null if no match applies.
      */
@@ -40,6 +40,20 @@ public class CustomerService {
         Customer customer = getCustomerFromRegistry(register);
         return createCustomer(customer, errors);
     }
+
+    /**
+     * Finds the Customer object that matches the `id` value.
+     *
+     * @return Customer object or null if no match applies.
+     */
+    public Customer getCustomer(String id) {
+        try {
+            return customerDao.getCustomerById(id);
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
 
     private Customer getCustomerFromRegistry(CustomerRegistry register) {
         Customer customer = new Customer();
