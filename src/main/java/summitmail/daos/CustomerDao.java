@@ -72,7 +72,7 @@ public class CustomerDao extends AbstractDao {
      */
     @SuppressWarnings("UnnecessaryLocalVariable")
     public Customer getCustomerById(String id) {
-        Bson queryFilter = new Document("id", id);
+        Bson queryFilter = new Document("_id", new ObjectId(id));
         Customer found = customersCollection.find(queryFilter).iterator().tryNext();
         return found;
     }

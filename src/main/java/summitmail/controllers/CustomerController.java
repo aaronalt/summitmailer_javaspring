@@ -34,7 +34,7 @@ public class CustomerController extends ApiController {
         if (createdCustomer.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
-        response.put("info", createdCustomer);
+        response.put("customer", createdCustomer);
         return ResponseEntity.ok(response);
     }
 
@@ -42,11 +42,9 @@ public class CustomerController extends ApiController {
     public ResponseEntity getCustomer(@PathVariable("id") String id) {
         Map response = new HashMap<String, Object>();
         Customer customer = service.getCustomer(id);
-        if (customer.isEmpty()) { return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); }
-        else {
-            response.put("info", customer);
-            return ResponseEntity.ok(response);
-        }
+        if (customer == null) { return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); }
+        response.put("customer", customer);
+        return ResponseEntity.ok(response);
     }
 
     @Override
