@@ -2,6 +2,7 @@ package summitmail.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.Date;
 import java.util.Map;
 
 public class User {
@@ -10,8 +11,8 @@ public class User {
     private String email;
     @JsonIgnore
     private String hashedpw;
-
-    private boolean isAdmin;
+    private Date created_at;
+    private Date updated_at;
 
     private Map<String, String> preferences;
 
@@ -43,29 +44,21 @@ public class User {
         this.hashedpw = hashedpw;
     }
 
-    public Map<String, String> getPreferences() {
-        return preferences;
-    }
+    public Date getCreatedAtDate() { return created_at; }
 
-    public void setPreferences(Map<String, String> preferences) {
-        this.preferences = preferences;
-    }
+    public void setCreatedAtDate(Date date) { this.created_at = date; }
+
+    public Date getUpdatedAtDate() { return updated_at; }
+
+    public void setUpdatedAtDate(Date date) { this.updated_at = date; }
 
     /**
-     * Checks for user object is emptiness.
+     * Checks if user object is empty.
      *
      * @return if no email set, the user is empty.
      */
     @JsonIgnore
     public boolean isEmpty() {
         return this.email == null || "".equals(this.getEmail());
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
     }
 }
