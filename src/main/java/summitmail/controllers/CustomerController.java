@@ -27,6 +27,11 @@ public class CustomerController extends ApiController {
         super();
     }
 
+    @Override
+    ResponseEntity<Map> index() {
+        return null;
+    }
+
     @PostMapping
     public ResponseEntity createCustomer(@RequestBody CustomerRegistry registry) {
         Map response = new HashMap<String, Object>();
@@ -47,12 +52,7 @@ public class CustomerController extends ApiController {
         return ResponseEntity.ok(response);
     }
 
-    @Override
-    ResponseEntity<Map> index() {
-        return null;
-    }
-
-    @GetMapping(value = "/all")
+    @GetMapping
     public ResponseEntity getCustomers() {
         Map response = new HashMap<String, ArrayList<Customer>>();
         Map<String, ?> customers = service.getCustomers();

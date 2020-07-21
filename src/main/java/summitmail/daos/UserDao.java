@@ -69,15 +69,11 @@ public class UserDao extends AbstractDao {
      * @return true if successful
      */
     public boolean createUserSession(String userId, String jwt) {
-        //Ticket: User Management - implement the method that allows session information to be
-        // stored in it's designated collection.
         Session userSession = new Session();
         userSession.setUserId(userId);
         userSession.setJwt(jwt);
         sessionsCollection.insertOne(userSession);
         return true;
-        //Ticket: Handling Errors - implement a safeguard against
-        // creating a session with the same jwt token.
     }
 
     /**
@@ -88,7 +84,6 @@ public class UserDao extends AbstractDao {
      */
     public User getUser(String email) {
         User user = null;
-        //Ticket: User Management - implement the query that returns the first User object.
         Bson queryFilter = new Document("email", email);
         User userFound = usersCollection.find(queryFilter).iterator().tryNext();
         return userFound;
@@ -101,15 +96,12 @@ public class UserDao extends AbstractDao {
      * @return Session object or null.
      */
     public Session getUserSession(String userId) {
-        //Ticket: User Management - implement the method that returns Sessions for a given
-        // userId
         Bson sessionFilter = new Document("user_id", userId);
         Session sessionFound = sessionsCollection.find(sessionFilter).iterator().tryNext();
         return sessionFound;
     }
 
     public boolean deleteUserSessions(String userId) {
-        //Ticket: User Management - implement the delete user sessions method
         Bson sessionFilter = new Document("user_id", userId);
         sessionsCollection.deleteMany(sessionFilter);
         return false;
@@ -122,9 +114,6 @@ public class UserDao extends AbstractDao {
      * @return true if user successfully removed
      */
     public boolean deleteUser(String email) {
-        //Ticket: User Management - implement the delete user method
-        //Ticket: Handling Errors - make this method more robust by
-        // handling potential exceptions.
         Bson userQuery = new Document("email", email);
         usersCollection.deleteOne(userQuery);
         deleteUserSessions(email);
