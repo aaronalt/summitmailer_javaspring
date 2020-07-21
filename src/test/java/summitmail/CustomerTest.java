@@ -103,7 +103,7 @@ public class CustomerTest extends AbstractTest {
     dao.addCustomer(testCustomer2);
     dao.addCustomer(testCustomer3);
     int expectedSize = 3;
-    List<Customer> customers = dao.getCustomers(expectedSize, 0);
+    List<Customer> customers = dao.getCustomers();
     Assert.assertNotNull(customers);
     Assert.assertEquals(expectedSize, customers.size());
   }

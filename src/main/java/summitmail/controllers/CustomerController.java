@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import summitmail.models.*;
 import summitmail.services.CustomerService;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 @CrossOrigin(origins = "*")
@@ -50,21 +47,18 @@ public class CustomerController extends ApiController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
-    public ResponseEntity getCustomers(
-            @PathVariable(name = "resultsPerPage", required = false) int resultsPerPage,
-            @PathVariable(name = "page", required = false) int page) {
-        Map response = new HashMap<String, Map<String, ?>>();
-        int results = (Integer)resultsPerPage == 0 ? 20 : resultsPerPage;
-        int pageCount = (Integer)page == 0 ? 0 : page;
-        Map<String, ?> customers = service.getCustomers(resultsPerPage, page);
-        if (customers.isEmpty()) { return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); }
-        response.put("customers", customers);
-        return ResponseEntity.ok(response);
-    }
-
     @Override
     ResponseEntity<Map> index() {
-        return ResponseEntity.ok(Collections.emptyMap());
+        return null;
+    }
+
+    @GetMapping(value = "/all")
+    public ResponseEntity getCustomers() {
+        Map response = new HashMap<String, ArrayList<Customer>>();
+        Map<String, ?> customers = service.getCustomers();
+        if (customers == null) { return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); }
+        ArrayList<Customer> customerList = (ArrayList<Customer>) customers.get("customer_list");
+        response.put("customers", customerList);
+        return ResponseEntity.ok().body(response);
     }
 }

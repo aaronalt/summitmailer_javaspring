@@ -78,22 +78,15 @@ public class CustomerService {
     /**
      * Lists all customers per page.
      *
-     * @param resultsPerPage - number of results per page
-     * @param page           - result set page
      * @return Map with list of results under `customers_list` key and total count under `customers_count`
      * key.
      */
-    public Map<String, ?> getCustomers(int resultsPerPage, int page) {
-        int skip = resultsPerPage * page;
-
+    public Map<String, ?> getCustomers() {
         List<Customer> customers =
                 new ArrayList<>(customerDao
-                        .getCustomers(resultsPerPage, skip));
+                        .getCustomers());
         Map<String, Object> result = new HashMap<>();
         result.put("customer_list", customers);
-        if (page == 0) {
-            result.put("customer_count", customerDao.getCustomersCount());
-        }
         return result;
     }
 

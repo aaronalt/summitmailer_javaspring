@@ -93,33 +93,25 @@ public class CustomerDao extends AbstractDao {
     /**
      * Returns all customers within the defined limit and skip values.
      *
-     * @param limit - max number of returned documents.
-     * @param skip  - number of documents to be skipped.
      * @return list of documents.
      */
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public List<Customer> getCustomers(int limit, int skip) {
+    public List<Customer> getCustomers() {
         List<Customer> customers =
-                new ArrayList<>(getCustomers(limit, skip, Sorts.descending()));
+                new ArrayList<>(getCustomers(Sorts.descending()));
         return customers;
     }
 
     /**
      * Finds a limited amount of customers documents, for a given sort order.
      *
-     * @param limit - max number of documents to be returned.
-     * @param skip  - number of documents to be skipped.
      * @param sort  - result sorting criteria.
      * @return list of documents that sorted by the defined sort criteria.
      */
-    public List<Customer> getCustomers(int limit, int skip, Bson sort) {
-
+    public List<Customer> getCustomers(Bson sort) {
         List<Customer> customers = new ArrayList<>();
-
         customersCollection
                 .find()
-                .limit(limit)
-                .skip(skip)
                 .sort(sort)
                 .iterator()
                 .forEachRemaining(customers::add);
