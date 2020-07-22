@@ -32,6 +32,7 @@ public class UserTest extends TicketTest {
     private static String email = "gryffindor@hogwarts.edu";
     private User testUser;
     private String jwt;
+
     @Autowired
     MongoClient mongoClient;
 
