@@ -38,6 +38,10 @@ public class User {
     private List<Customer> customers;
     @DBRef
     private List<ATConfig> airtable_configs;
+    @DBRef
+    private List<Template> templates;
+    @DBRef
+    private List<Output> outputs;
 
     public User() {
         super();
