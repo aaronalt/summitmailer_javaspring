@@ -4,6 +4,8 @@ package summitmail.models;
 // import javax.validation.constraints.NotNull;
 // import javax.validation.constraints.Size;
 
+import java.util.Date;
+
 public class UserRegistry {
 
     // @NotNull(message = "`name` field is mandatory")
@@ -17,6 +19,9 @@ public class UserRegistry {
     // @NotNull(message = "`password` field is mandatory")
     // @Size(min = 8, message = "`password` must be at least 8 characters long")
     private String password;
+
+    private Date created_at;
+    private Date updated_at;
 
     public UserRegistry() {
     }

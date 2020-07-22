@@ -51,20 +51,6 @@ public class UserService implements UserDetailsService {
         return createUser(user, errors);
     }
 
-    /**
-     * Creates an admin user.
-     *
-     * @param register - registration data for this user.
-     * @param errors   - map to access any errors.
-     * @return null if user creation fails. User object otherwise.
-     */
-    public User createAdminUser(UserRegistry register,
-                                Map<String, String> errors) {
-        User user = getUserFromRegistry(register);
-        user.setAdmin(true);
-        return createUser(user, errors);
-    }
-
     private User getUserFromRegistry(UserRegistry register) {
         User user = new User();
         // encode password

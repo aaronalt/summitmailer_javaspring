@@ -88,21 +88,6 @@ public class UserController extends ApiController {
         return ResponseEntity.ok(response);
     }
 
-
-    @PostMapping("/make-admin")
-    public ResponseEntity makeUserAdmin(@RequestBody UserRegistry registry) {
-        Map<String, String> results = new HashMap<>();
-        User user = userService.createAdminUser(registry, results);
-
-        if (user == null || user.isEmpty()) {
-            results.put("status", "fail");
-            return ResponseEntity.badRequest().body(results);
-        }
-
-        return authenticateUser(new Login(registry.getEmail(), registry.getPassword()));
-    }
-
-
     @Override
     ResponseEntity<Map> index() {
         return ResponseEntity.ok(Collections.emptyMap());

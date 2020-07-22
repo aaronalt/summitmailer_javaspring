@@ -1,24 +1,47 @@
 package summitmail.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+@Document(collection = "users")
 public class User {
 
+    @Id
+    @BsonProperty("id")
+    private String id;
+    @Field("name")
     private String name;
+    @Field("email")
     private String email;
+    @Field("hashedpw")
     @JsonIgnore
     private String hashedpw;
-    private Date created_at;
-    private Date updated_at;
+    @Field("created_at")
+    @CreatedDate
+    Date created_at;
+    @Field("updated_at")
+    @LastModifiedDate
+    Date updated_at;
 
-    private Map<String, String> preferences;
+    @DBRef
+    private List<Customer> customers;
 
     public User() {
         super();
     }
+
+    public String getId() { return id; }
 
     public String getName() {
         return name;
