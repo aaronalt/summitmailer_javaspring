@@ -68,7 +68,7 @@ public class UserTest extends TicketTest {
 
         assertTrue(
                 "Should have correctly created the user - check your write user method",
-                dao.addUser(testUser)); // add string explanation
+                dao.addUser(testUser));
 
         User user = dao.getUser(testUser.getEmail());
         Assert.assertEquals(testUser.getName(), user.getName());

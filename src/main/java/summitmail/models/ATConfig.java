@@ -2,9 +2,8 @@ package summitmail.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.*;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -16,36 +15,41 @@ public class ATConfig {
     @Id
     @BsonProperty("id")
     private String id;
-    @Field("user_id")
-    private String user_id;
+    @Field("name")
+    @Indexed
+    private String name;
+    @Field("userId")
+    private String userId;
     @JsonIgnore
-    @Field("api_key")
-    private String api_key;
-    @Field("base_id")
-    private String base_id;
-    @Field("created_at")
+    @Field("apiKey")
+    private String apiKey;
+    @Field("baseId")
+    private String baseId;
+
     @CreatedDate
-    Date created_at;
-    @Field("updated_at")
+    private Date createdAt;
     @LastModifiedDate
-    Date updated_at;
+    private Date updatedAt;
+    @CreatedBy
+    private String createdBy;
+    @LastModifiedBy
+    private String lastModifiedBy;
 
     public ATConfig() { super(); }
 
     public String getId() { return id; }
 
-    public String getUserId() { return user_id; }
-    public void setUserId(String id) { this.user_id = id; }
+    public String getUserId() { return userId; }
+    public void setUserId(String id) { this.userId = id; }
 
-    public String getApiKey() { return api_key; }
-    public void setApiKey(String key) { this.api_key = key; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getBaseId() { return base_id; }
-    public void setBaseId(String id) { this.base_id = id; }
+    public String getApiKey() { return apiKey; }
+    public void setApiKey(String key) { this.apiKey = key; }
+    public boolean hasApiKey() { return this.getApiKey() != null; }
 
-    public Date getCreatedAtDate() { return created_at; }
-    public void setCreatedAtDate(Date date) { this.created_at = date; }
-
-    public Date getUpdatedAtDate() { return updated_at; }
-    public void setUpdatedAtDate(Date date) { this.updated_at = date; }
+    public String getBaseId() { return baseId; }
+    public void setBaseId(String id) { this.baseId = id; }
+    public boolean hasBaseId() { return this.getBaseId() != null; }
 }

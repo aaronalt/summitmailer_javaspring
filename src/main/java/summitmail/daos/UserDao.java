@@ -1,7 +1,6 @@
 package summitmail.daos;
 
 import com.mongodb.MongoClientSettings;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
@@ -15,11 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import summitmail.models.Session;
 import summitmail.models.User;
-
-
-import java.util.List;
-import java.util.Map;
-
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
@@ -56,8 +50,6 @@ public class UserDao extends AbstractDao {
             usersCollection.insertOne(user);
             return true;
         }
-        // Ticket: Handling Errors - make sure to only add new users
-        // and not users that already exist.
         else return false;
     }
 

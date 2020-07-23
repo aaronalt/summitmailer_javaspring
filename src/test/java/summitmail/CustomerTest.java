@@ -1,11 +1,7 @@
 package summitmail;
 
-import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.types.ObjectId;
 import org.junit.After;
 import summitmail.config.MongoDBConfiguration;
 import org.bson.Document;
@@ -21,14 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import summitmail.daos.CustomerDao;
 import summitmail.models.Customer;
-import summitmail.services.CustomerService;
-import summitmail.utils.CustomerCodec;
-
-import java.util.ArrayList;
 import java.util.List;
-
-import static org.bson.codecs.configuration.CodecRegistries.fromCodecs;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 @SpringBootTest(classes = {MongoDBConfiguration.class})
 @EnableConfigurationProperties
@@ -40,7 +29,6 @@ public class CustomerTest extends AbstractTest {
   private Customer testCustomer;
   private Customer testCustomer2;
   private Customer testCustomer3;
-  private Customer testCustomer4;
   private static String email = "info@test1.com";
 
   @Autowired MongoClient mongoClient;

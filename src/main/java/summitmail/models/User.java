@@ -3,9 +3,7 @@ package summitmail.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -27,12 +25,15 @@ public class User {
     @Field("hashedpw")
     @JsonIgnore
     private String hashedpw;
-    @Field("created_at")
+
     @CreatedDate
-    Date created_at;
-    @Field("updated_at")
+    private Date createdAt;
     @LastModifiedDate
-    Date updated_at;
+    private Date updatedAt;
+    @CreatedBy
+    private String createdBy;
+    @LastModifiedBy
+    private String lastModifiedBy;
 
     @DBRef
     private List<Customer> customers;
@@ -69,12 +70,6 @@ public class User {
     public void setHashedpw(String hashedpw) {
         this.hashedpw = hashedpw;
     }
-
-    public Date getCreatedAtDate() { return created_at; }
-    public void setCreatedAtDate(Date date) { this.created_at = date; }
-
-    public Date getUpdatedAtDate() { return updated_at; }
-    public void setUpdatedAtDate(Date date) { this.updated_at = date; }
 
     /**
      * Checks if user object is empty.
